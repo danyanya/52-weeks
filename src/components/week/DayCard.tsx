@@ -15,9 +15,11 @@ interface DayCardProps {
   onChange: (content: string) => void
 }
 
+type ViewMode = 'collapsed' | 'expanded' | 'editing'
+
 export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
   const { t, locale } = useTranslation()
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('collapsed')
   const [localContent, setLocalContent] = useState(content)
 
   const debouncedSave = useDebouncedSave(async (newContent: string) => {
@@ -27,6 +29,16 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
   const handleContentChange = (newContent: string) => {
     setLocalContent(newContent)
     debouncedSave(newContent)
+  }
+
+  const handleHeaderClick = () => {
+    if (viewMode === 'collapsed') {
+      setViewMode('expanded')
+    } else if (viewMode === 'expanded') {
+      setViewMode('editing')
+    } else {
+      setViewMode('collapsed')
+    }
   }
 
   // Get day name by index (0 = Monday, 6 = Sunday)
@@ -54,7 +66,7 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
     >
       {/* Header - клик для toggle */}
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleHeaderClick}
         className={`px-3 sm:px-4 py-3 sm:py-3 min-h-[56px] flex items-center justify-between cursor-pointer rounded-t-2xl active:opacity-70 transition-opacity ${
           isToday ? 'bg-blue-50' : 'bg-gray-50'
         }`}
@@ -84,18 +96,22 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
           <span className="text-xs sm:text-sm text-gray-400">
             {stats.done}/{stats.total}
           </span>
-          <span
-            className={`transition-transform text-lg ${
-              isExpanded ? 'rotate-180' : ''
-            }`}
-          >
-            ▾
-          </span>
+          {viewMode === 'editing' ? (
+            <span className="text-lg">✏️</span>
+          ) : (
+            <span
+              className={`transition-transform text-lg ${
+                viewMode === 'expanded' ? 'rotate-180' : ''
+              }`}
+            >
+              ▾
+            </span>
+          )}
         </div>
       </div>
 
       {/* Content */}
-      {isExpanded ? (
+      {viewMode === 'editing' ? (
         <div className="p-3 sm:p-4">
           <textarea
             value={localContent}
@@ -108,19 +124,36 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
             spellCheck="false"
           />
         </div>
-      ) : (
-        <div className="p-3 sm:p-4 text-sm">
-          {lines.slice(0, 5).map((line, i) => (
+      ) : viewMode === 'expanded' ? (
+        <div className="p-3 sm:p-4 text-sm max-h-[200px] overflow-y-auto">
+          {lines.map((line, i) => (
             <LineRenderer key={i} line={line} />
           ))}
-          {lines.length > 5 && (
-            <div className="text-gray-400 text-xs mt-2">
-              +{lines.length - 5} {locale === 'ru' ? 'ещё...' : 'more...'}
-            </div>
-          )}
           {lines.length === 0 && (
             <div className="text-gray-400 text-xs">{t.day.tasksCount_zero}</div>
           )}
+        </div>
+      ) : (
+        <div className="p-3 sm:p-4 text-sm max-h-[200px] overflow-y-auto">
+          {(() => {
+            // В свёрнутом виде показываем только TODO (не выполненные)
+            const todoLines = lines.filter(line => line.status !== 'done')
+            return (
+              <>
+                {todoLines.map((line, i) => (
+                  <LineRenderer key={i} line={line} />
+                ))}
+                {todoLines.length === 0 && lines.length > 0 && (
+                  <div className="text-gray-400 text-xs">
+                    {locale === 'ru' ? 'Все задачи выполнены!' : 'All tasks completed!'}
+                  </div>
+                )}
+                {lines.length === 0 && (
+                  <div className="text-gray-400 text-xs">{t.day.tasksCount_zero}</div>
+                )}
+              </>
+            )
+          })()}
         </div>
       )}
     </div>
