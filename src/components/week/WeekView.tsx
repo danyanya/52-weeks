@@ -3,6 +3,7 @@ import { useWeek } from '../../hooks/use-week'
 import { getWeekDates, formatWeekRange, getCurrentWeek, getPreviousWeek, getNextWeek } from '../../lib/date-utils'
 import { DayCard } from './DayCard'
 import { WeekFocus } from './WeekFocus'
+import { WeekExportImport } from './WeekExportImport'
 import { Button } from '../ui/Button'
 import { isToday } from 'date-fns'
 import { useTranslation } from '../../hooks/use-translation'
@@ -11,10 +12,9 @@ import { interpolate } from '../../hooks/use-translation'
 interface WeekViewProps {
   initialYear?: number
   initialWeekNumber?: number
-  onBackToQuarter?: () => void
 }
 
-export function WeekView({ initialYear, initialWeekNumber, onBackToQuarter }: WeekViewProps = {}) {
+export function WeekView({ initialYear, initialWeekNumber }: WeekViewProps = {}) {
   const { t } = useTranslation()
   const currentWeek = getCurrentWeek()
   const [selectedWeek, setSelectedWeek] = useState({
@@ -41,6 +41,21 @@ export function WeekView({ initialYear, initialWeekNumber, onBackToQuarter }: We
 
   const handleToday = () => {
     setSelectedWeek(getCurrentWeek())
+  }
+
+  const handleImport = async (data: {
+    focusText: string
+    days: Array<{ dayIndex: number; content: string }>
+  }) => {
+    // Обновляем фокус недели
+    if (data.focusText) {
+      await updateFocus(data.focusText)
+    }
+
+    // Обновляем дни
+    for (const day of data.days) {
+      await updateDay(day.dayIndex, day.content)
+    }
   }
 
   const isCurrentWeek = selectedWeek.year === currentWeek.year && selectedWeek.weekNumber === currentWeek.weekNumber
@@ -88,17 +103,10 @@ export function WeekView({ initialYear, initialWeekNumber, onBackToQuarter }: We
       <div className="flex flex-col gap-3 sm:gap-4">
         {/* Navigation buttons */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1 sm:gap-2">
-            {onBackToQuarter && (
-              <Button variant="ghost" size="sm" onClick={onBackToQuarter} className="hidden sm:flex">
-                {t.nav.backToQuarter}
-              </Button>
-            )}
-            <Button variant="ghost" size="sm" onClick={handlePreviousWeek} className="min-w-[44px]">
-              <span className="hidden sm:inline">{t.week.previous}</span>
-              <span className="sm:hidden">←</span>
-            </Button>
-          </div>
+          <Button variant="ghost" size="sm" onClick={handlePreviousWeek} className="min-w-[44px]">
+            <span className="hidden sm:inline">{t.week.previous}</span>
+            <span className="sm:hidden">←</span>
+          </Button>
 
           <div className="text-center flex-1">
             <h2 className="text-xl sm:text-3xl font-bold text-gray-900">
@@ -109,10 +117,23 @@ export function WeekView({ initialYear, initialWeekNumber, onBackToQuarter }: We
             </p>
           </div>
 
-          <Button variant="ghost" size="sm" onClick={handleNextWeek} className="min-w-[44px]">
-            <span className="hidden sm:inline">{t.week.next}</span>
-            <span className="sm:hidden">→</span>
-          </Button>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button variant="ghost" size="sm" onClick={handleNextWeek} className="min-w-[44px]">
+              <span className="hidden sm:inline">{t.week.next}</span>
+              <span className="sm:hidden">→</span>
+            </Button>
+
+            {/* Export/Import buttons */}
+            <WeekExportImport
+              week={{
+                year: selectedWeek.year,
+                week_number: selectedWeek.weekNumber,
+                focus_text: week?.focus_text || '',
+                days: week?.days || []
+              }}
+              onImport={handleImport}
+            />
+          </div>
         </div>
 
         {/* Today button - full width on mobile */}

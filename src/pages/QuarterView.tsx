@@ -1,4 +1,3 @@
-import { Button } from '../components/ui/Button'
 import { getWeeksInQuarter, getQuarterName, formatQuarterRange, formatWeekRange, getCurrentWeek } from '../lib/date-utils'
 import { useTranslation } from '../hooks/use-translation'
 
@@ -6,10 +5,9 @@ interface QuarterViewProps {
   year: number
   quarter: number
   onWeekClick: (weekNumber: number) => void
-  onBackToYear: () => void
 }
 
-export function QuarterView({ year, quarter, onWeekClick, onBackToYear }: QuarterViewProps) {
+export function QuarterView({ year, quarter, onWeekClick }: QuarterViewProps) {
   const { t } = useTranslation()
   const weeks = getWeeksInQuarter(year, quarter)
   const currentWeek = getCurrentWeek()
@@ -19,20 +17,11 @@ export function QuarterView({ year, quarter, onWeekClick, onBackToYear }: Quarte
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={onBackToYear} className="min-w-[44px]">
-          <span className="hidden sm:inline">{t.nav.backToYear}</span>
-          <span className="sm:hidden">←</span>
-        </Button>
-
-        <div className="text-center flex-1">
-          <h2 className="text-xl sm:text-3xl font-bold text-gray-900">
-            {getQuarterName(quarter)} {year}
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">{formatQuarterRange(year, quarter)}</p>
-        </div>
-
-        <div className="w-[44px] sm:w-24" /> {/* Spacer for alignment */}
+      <div className="text-center">
+        <h2 className="text-xl sm:text-3xl font-bold text-gray-900">
+          {getQuarterName(quarter)} {year}
+        </h2>
+        <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">{formatQuarterRange(year, quarter)}</p>
       </div>
 
       {/* Weeks Grid */}

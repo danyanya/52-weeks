@@ -10,7 +10,8 @@ interface AuthState {
 
   // Actions
   initialize: () => Promise<void>
-  signInWithEmail: (email: string) => Promise<{ error: Error | null }>
+  signInWithOtp: (email: string) => Promise<{ error: Error | null }>
+  verifyOtp: (email: string, token: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
 }
 
@@ -69,8 +70,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     })
   },
 
-  signInWithEmail: async (email: string) => {
-    // Проверка whitelist перед отправкой magic link
+  signInWithOtp: async (email: string) => {
+    // Проверка whitelist перед отправкой OTP
     if (isWhitelistEnabled() && !isEmailAllowed(email)) {
       console.warn(`Попытка входа с неразрешенного email: ${email}`)
       return {
@@ -78,11 +79,22 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
     }
 
+    // Отправляем OTP код (без emailRedirectTo)
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin,
+        shouldCreateUser: true,
       }
+    })
+
+    return { error }
+  },
+
+  verifyOtp: async (email: string, token: string) => {
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'email'
     })
 
     return { error }

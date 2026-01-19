@@ -39,15 +39,6 @@ export function MainView() {
     setViewState({ type: 'week', year: viewState.year, weekNumber, quarter })
   }
 
-  const handleBackToYear = () => {
-    setViewState({ type: 'year', year: viewState.year })
-  }
-
-  const handleBackToQuarter = () => {
-    const quarter = viewState.quarter || getQuarterFromWeek(viewState.weekNumber || 1)
-    setViewState({ type: 'quarter', year: viewState.year, quarter })
-  }
-
   // Breadcrumb navigation
   const renderBreadcrumbs = () => {
     if (viewState.type === 'year') {
@@ -69,7 +60,10 @@ export function MainView() {
             {viewState.quarter && (
               viewState.type === 'week' ? (
                 <button
-                  onClick={handleBackToQuarter}
+                  onClick={() => {
+                    const quarter = viewState.quarter || getQuarterFromWeek(viewState.weekNumber || 1)
+                    setViewState({ type: 'quarter', year: viewState.year, quarter })
+                  }}
                   className="hover:text-blue-600 transition-colors"
                 >
                   Q{viewState.quarter}
@@ -145,7 +139,6 @@ export function MainView() {
           year={viewState.year}
           quarter={viewState.quarter}
           onWeekClick={handleWeekClick}
-          onBackToYear={handleBackToYear}
         />
       )}
 
@@ -153,7 +146,6 @@ export function MainView() {
         <WeekView
           initialYear={viewState.year}
           initialWeekNumber={viewState.weekNumber}
-          onBackToQuarter={handleBackToQuarter}
         />
       )}
     </div>
