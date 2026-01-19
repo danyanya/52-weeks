@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install)",
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(pkill:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node test-dates.js:*)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)"
+    ]
+  }
+}
