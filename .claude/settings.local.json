@@ -10,7 +10,8 @@
       "Bash(node test-dates.js:*)",
       "Bash(chmod:*)",
       "Bash(ls:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }

@@ -1,5 +1,5 @@
 import { useTranslation } from '../../hooks/use-translation'
-import { type Locale, localeNames } from '../../i18n'
+import { type Locale } from '../../i18n'
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useTranslation()

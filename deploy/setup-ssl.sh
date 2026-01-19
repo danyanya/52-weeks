@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Скрипт настройки SSL сертификата Let's Encrypt
-# Использование: bash deploy/setup-ssl.sh yourdomain.com your-email@example.com
+# Использование:
+#   bash deploy/setup-ssl.sh yourdomain.com your-email@example.com
+#   или
+#   bash deploy/setup-ssl.sh  (использует DOMAIN и SSL_EMAIL из .env)
 # ВАЖНО: Запускайте из корневой директории проекта
 
 set -e
@@ -9,15 +12,32 @@ set -e
 # Проверяем что мы в корне проекта
 if [ ! -f "package.json" ] || [ ! -d "deploy" ]; then
     echo "Ошибка: Запустите скрипт из корневой директории проекта"
-    echo "Использование: bash deploy/setup-ssl.sh yourdomain.com your-email@example.com"
+    echo "Использование: bash deploy/setup-ssl.sh [domain] [email]"
     exit 1
 fi
 
-DOMAIN=$1
-EMAIL=$2
+# Загружаем переменные из .env если файл существует
+if [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# Получаем домен и email из аргументов или из .env
+DOMAIN=${1:-$DOMAIN}
+EMAIL=${2:-$SSL_EMAIL}
 
 if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then
-    echo "Использование: bash deploy/setup-ssl.sh yourdomain.com your-email@example.com"
+    echo "Ошибка: Не указаны домен и email"
+    echo ""
+    echo "Использование (вариант 1 - аргументы):"
+    echo "  bash deploy/setup-ssl.sh yourdomain.com your-email@example.com"
+    echo ""
+    echo "Использование (вариант 2 - из .env файла):"
+    echo "  Добавьте в .env файл:"
+    echo "    DOMAIN=yourdomain.com"
+    echo "    SSL_EMAIL=your-email@example.com"
+    echo "  Затем запустите:"
+    echo "    bash deploy/setup-ssl.sh"
+    echo ""
     exit 1
 fi
 

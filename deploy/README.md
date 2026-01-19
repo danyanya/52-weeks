@@ -90,6 +90,23 @@ make clean
 
 ### Автоматическая настройка
 
+#### Способ 1: Через .env файл (рекомендуется)
+
+Добавьте в `.env` файл:
+
+```env
+DOMAIN=yourdomain.com
+SSL_EMAIL=your-email@example.com
+```
+
+Затем запустите:
+
+```bash
+bash deploy/setup-ssl.sh
+```
+
+#### Способ 2: Через аргументы командной строки
+
 ```bash
 bash deploy/setup-ssl.sh yourdomain.com your-email@example.com
 ```

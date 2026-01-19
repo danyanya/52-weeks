@@ -1,5 +1,5 @@
 import { useLocaleStore } from '../store/locale-store'
-import { locales, type Locale } from '../i18n'
+import { locales } from '../i18n'
 
 /**
  * Hook для использования переводов

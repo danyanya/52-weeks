@@ -67,9 +67,40 @@ npm run dev
 
 ## Production Deployment
 
-Все файлы для деплоя находятся в директории `deploy/`:
+### Vercel (рекомендуется)
 
-### Быстрый старт (Docker)
+Самый простой способ задеплоить приложение:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/52-weeks)
+
+**Или через CLI:**
+
+```bash
+# Установите Vercel CLI
+npm i -g vercel
+
+# Деплой
+vercel
+
+# Production деплой
+vercel --prod
+```
+
+**Переменные окружения в Vercel:**
+
+Добавьте в настройках проекта (Settings → Environment Variables):
+
+- `VITE_SUPABASE_URL` - URL вашего Supabase проекта
+- `VITE_SUPABASE_ANON_KEY` - Anon key из Supabase
+- `VITE_ALLOWED_EMAILS` (опционально) - Список разрешенных email через запятую
+
+📖 **[Подробная инструкция по деплою на Vercel](VERCEL_DEPLOY.md)**
+
+### Docker Deployment
+
+Все файлы для Docker деплоя находятся в директории `deploy/`:
+
+#### Быстрый старт (Docker)
 
 ```bash
 # 1. Создайте .env файл
@@ -83,14 +114,28 @@ make up
 make status
 ```
 
-### Деплой с SSL (Let's Encrypt)
+#### Деплой с SSL (Let's Encrypt)
+
+Добавьте в `.env` файл:
+
+```env
+DOMAIN=yourdomain.com
+SSL_EMAIL=your-email@example.com
+```
+
+Затем запустите:
 
 ```bash
-# Автоматическая настройка SSL сертификата
+bash deploy/setup-ssl.sh
+```
+
+Или используйте аргументы напрямую:
+
+```bash
 bash deploy/setup-ssl.sh yourdomain.com your-email@example.com
 ```
 
-### Makefile команды
+#### Makefile команды
 
 ```bash
 make help          # Показать все доступные команды
@@ -107,7 +152,7 @@ make prod-logs     # Логи production
 make prod-down     # Остановить production
 ```
 
-### Структура deploy/
+#### Структура deploy/
 
 ```text
 deploy/
@@ -122,7 +167,7 @@ deploy/
 └── Makefile                # Automation commands
 ```
 
-### Автоматическая установка на Ubuntu/Debian
+#### Автоматическая установка на Ubuntu/Debian
 
 ```bash
 # Установка Docker, Docker Compose и настройка firewall
