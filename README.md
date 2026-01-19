@@ -15,6 +15,16 @@
 - 🔒 Cookie-based authentication с fallback для iOS
 - 🚀 Docker + Nginx ready
 
+## Screenshots
+
+### Login Page
+
+![Login Demo](docs/52-weeks-login-demo.png)
+
+### Week Planning
+
+![Page Demo](docs/52-weeks-page-demo.png)
+
 ## Технологии
 
 - **Frontend**: React 18 + TypeScript + Vite

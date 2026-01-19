@@ -13,11 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     // Сохранять сессию между перезагрузками
     persistSession: true,
-    // Обнаруживать токены в URL (для magic links)
+    // Обнаруживать токены в URL (для OTP)
     detectSessionInUrl: true,
-    // Использовать implicit flow вместо PKCE для лучшей совместимости с iOS
-    // PKCE может вызывать проблемы в некоторых мобильных браузерах
-    flowType: 'implicit',
+    // Использовать PKCE flow для максимальной безопасности
+    // PKCE защищает от перехвата токенов и CSRF атак
+    flowType: 'pkce',
     // Дополнительная опция для storage recovery
     storageKey: 'sb-auth-token'
   }
