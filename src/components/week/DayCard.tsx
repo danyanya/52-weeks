@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { parseContent, countStats } from '../../lib/text-parser'
 import { LineRenderer } from './LineRenderer'
 import { useDebouncedSave } from '../../hooks/use-debounced-save'
@@ -21,6 +21,7 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
   const { t, locale } = useTranslation()
   const [viewMode, setViewMode] = useState<ViewMode>('collapsed')
   const [localContent, setLocalContent] = useState(content)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const debouncedSave = useDebouncedSave(async (newContent: string) => {
     onChange(newContent)
@@ -41,6 +42,16 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
     }
   }
 
+  const handleEditClick = () => {
+    setViewMode('editing')
+  }
+
+  const handleContentClick = () => {
+    if (viewMode === 'expanded') {
+      setViewMode('editing')
+    }
+  }
+
   // Get day name by index (0 = Monday, 6 = Sunday)
   const getDayName = (index: number): string => {
     const dayNames = [
@@ -57,6 +68,16 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
 
   const stats = countStats(localContent)
   const lines = parseContent(localContent)
+
+  // Автофокус на textarea при переходе в режим редактирования
+  useEffect(() => {
+    if (viewMode === 'editing' && textareaRef.current) {
+      textareaRef.current.focus()
+      // Ставим курсор в конец текста
+      const length = textareaRef.current.value.length
+      textareaRef.current.setSelectionRange(length, length)
+    }
+  }, [viewMode])
 
   return (
     <div
@@ -98,12 +119,17 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
           </span>
           {viewMode === 'editing' ? (
             <span className="text-lg">✏️</span>
+          ) : viewMode === 'expanded' ? (
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-blue-600 hidden sm:inline">
+                {locale === 'ru' ? 'клик → ✏️' : 'click → ✏️'}
+              </span>
+              <span className="transition-transform text-lg rotate-180">
+                ▾
+              </span>
+            </div>
           ) : (
-            <span
-              className={`transition-transform text-lg ${
-                viewMode === 'expanded' ? 'rotate-180' : ''
-              }`}
-            >
+            <span className="transition-transform text-lg">
               ▾
             </span>
           )}
@@ -114,6 +140,7 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
       {viewMode === 'editing' ? (
         <div className="p-3 sm:p-4">
           <textarea
+            ref={textareaRef}
             value={localContent}
             onChange={(e) => handleContentChange(e.target.value)}
             className="w-full min-h-[200px] text-sm sm:text-base font-mono bg-transparent resize-none focus:outline-none touch-manipulation"
@@ -125,13 +152,36 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
           />
         </div>
       ) : viewMode === 'expanded' ? (
-        <div className="p-3 sm:p-4 text-sm max-h-[200px] overflow-y-auto">
-          {lines.map((line, i) => (
-            <LineRenderer key={i} line={line} />
-          ))}
-          {lines.length === 0 && (
-            <div className="text-gray-400 text-xs">{t.day.tasksCount_zero}</div>
-          )}
+        <div>
+          {/* Content area - кликабельно для редактирования */}
+          <div
+            onClick={handleContentClick}
+            className="p-3 sm:p-4 text-sm max-h-[200px] overflow-y-auto cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            {lines.map((line, i) => (
+              <LineRenderer key={i} line={line} />
+            ))}
+            {lines.length === 0 && (
+              <div className="text-gray-400 text-xs">{t.day.tasksCount_zero}</div>
+            )}
+          </div>
+
+          {/* Edit button с подсказкой */}
+          <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0 flex items-center justify-between border-t border-gray-100">
+            <span className="text-xs text-gray-400">
+              {locale === 'ru' ? 'Нажмите для редактирования' : 'Click to edit'}
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleEditClick()
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              <span>✏️</span>
+              <span>{locale === 'ru' ? 'Редактировать' : 'Edit'}</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="p-3 sm:p-4 text-sm max-h-[200px] overflow-y-auto">
