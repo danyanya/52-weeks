@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Button } from '../ui/Button'
 import { exportWeekToText, importWeekFromText, downloadTextFile } from '../../lib/week-export'
-import { useTranslation } from '../../hooks/use-translation'
+import { useTranslation, interpolate } from '../../hooks/use-translation'
 
 interface WeekExportImportProps {
   week: {
@@ -17,7 +17,7 @@ interface WeekExportImportProps {
 }
 
 export function WeekExportImport({ week, onImport }: WeekExportImportProps) {
-  const { locale } = useTranslation()
+  const { t, locale } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleExport = () => {
@@ -26,50 +26,45 @@ export function WeekExportImport({ week, onImport }: WeekExportImportProps) {
     downloadTextFile(text, filename)
   }
 
-  const handleImportClick = () => {
+  const handleImportFileClick = () => {
     fileInputRef.current?.click()
   }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleTextImport = async () => {
+    const text = prompt(t.week.importTextPrompt)
+    if (!text) return
 
+    await processImport(text)
+  }
+
+  const processImport = async (text: string) => {
     try {
-      const text = await file.text()
       const parsed = importWeekFromText(text)
 
       if (!parsed) {
-        alert(locale === 'ru'
-          ? 'Не удалось распознать формат файла. Проверьте что файл содержит правильную структуру.'
-          : 'Failed to parse file format. Please check that the file contains the correct structure.'
-        )
+        alert(t.week.importParseError)
         return
       }
 
       // Подтверждение импорта
-      const confirmMessage = locale === 'ru'
-        ? `Импортировать данные?\n\n${parsed.days.length} дней будут обновлены.\n${parsed.focusText ? 'Фокус недели будет обновлен.' : ''}\n\nТекущие данные будут заменены.`
-        : `Import data?\n\n${parsed.days.length} days will be updated.\n${parsed.focusText ? 'Week focus will be updated.' : ''}\n\nCurrent data will be replaced.`
+      const focusMessage = parsed.focusText ? t.week.importConfirmFocus : ''
+      const confirmMessage = interpolate(t.week.importConfirm, {
+        days: parsed.days.length,
+        focus: focusMessage
+      })
 
       if (!confirm(confirmMessage)) {
         return
       }
 
       await onImport(parsed)
-
-      alert(locale === 'ru'
-        ? 'Данные успешно импортированы!'
-        : 'Data imported successfully!'
-      )
+      alert(t.week.importSuccess)
 
       // Обновляем страницу для отображения импортированных данных
       window.location.reload()
     } catch (error) {
       console.error('Import error:', error)
-      alert(locale === 'ru'
-        ? 'Ошибка при импорте файла'
-        : 'Error importing file'
-      )
+      alert(t.week.importError)
       // Сбросить input для возможности повторного выбора того же файла
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -77,8 +72,16 @@ export function WeekExportImport({ week, onImport }: WeekExportImportProps) {
     }
   }
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const text = await file.text()
+    await processImport(text)
+  }
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <input
         ref={fileInputRef}
         type="file"
@@ -91,26 +94,30 @@ export function WeekExportImport({ week, onImport }: WeekExportImportProps) {
         variant="ghost"
         size="sm"
         onClick={handleExport}
-        title={locale === 'ru' ? 'Экспорт недели в текстовый файл' : 'Export week to text file'}
-        className="gap-1"
+        title={t.week.exportTooltip}
+        className="gap-1 px-2 min-w-[36px]"
       >
         <span className="text-base">📤</span>
-        {/* <span className="hidden sm:inline">
-          {locale === 'ru' ? 'Экспорт' : 'Export'}
-        </span> */}
       </Button>
 
       <Button
         variant="ghost"
         size="sm"
-        onClick={handleImportClick}
-        title={locale === 'ru' ? 'Импорт недели из текстового файла' : 'Import week from text file'}
-        className="gap-1"
+        onClick={handleImportFileClick}
+        title={t.week.importFileTooltip}
+        className="gap-1 px-2 min-w-[36px]"
       >
         <span className="text-base">📥</span>
-        {/* <span className="hidden sm:inline">
-          {locale === 'ru' ? 'Импорт' : 'Import'}
-        </span> */}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleTextImport}
+        title={t.week.importTextTooltip}
+        className="gap-1 px-2 min-w-[36px]"
+      >
+        <span className="text-base">📋</span>
       </Button>
     </div>
   )

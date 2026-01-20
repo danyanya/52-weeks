@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuthStore } from '../store/auth-store'
 import { useTranslation } from '../hooks/use-translation'
 import { interpolate } from '../hooks/use-translation'
 import { Button } from '../components/ui/Button'
 import { LanguageSwitcher } from '../components/layout/LanguageSwitcher'
+import { canSendOtpRequest, recordOtpRequest, getRateLimitInfo } from '../lib/rate-limit'
 
 type AuthStep = 'email' | 'verify-otp'
 
@@ -13,18 +14,59 @@ export function LoginPage() {
   const [authStep, setAuthStep] = useState<AuthStep>('email')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [cooldownSeconds, setCooldownSeconds] = useState(0)
+  const [requestsLeft, setRequestsLeft] = useState(10)
   const signInWithOtp = useAuthStore(state => state.signInWithOtp)
   const verifyOtp = useAuthStore(state => state.verifyOtp)
   const { t } = useTranslation()
+
+  // Таймер cooldown
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => {
+        setCooldownSeconds(cooldownSeconds - 1)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [cooldownSeconds])
+
+  // Обновить количество оставшихся запросов при монтировании
+  useEffect(() => {
+    const info = getRateLimitInfo()
+    setRequestsLeft(info.requestsLeft)
+  }, [])
 
   const handleSubmitEmail = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
 
+    // Проверка rate limit
+    const rateLimitCheck = canSendOtpRequest(email)
+    if (!rateLimitCheck.allowed) {
+      setIsLoading(false)
+
+      if (rateLimitCheck.reason === 'cooldown') {
+        setError(interpolate(t.login.cooldownError, { seconds: rateLimitCheck.retryAfter || 60 }))
+        setCooldownSeconds(rateLimitCheck.retryAfter || 60)
+      } else if (rateLimitCheck.reason === 'rate_limit') {
+        const minutes = Math.ceil((rateLimitCheck.retryAfter || 0) / 60)
+        setError(interpolate(t.login.rateLimitError, { minutes }))
+      }
+      return
+    }
+
     const { error: signInError } = await signInWithOtp(email)
 
     if (!signInError) {
+      // Записать успешный запрос
+      recordOtpRequest(email)
+
+      // Обновить счетчики
+      const info = getRateLimitInfo()
+      setRequestsLeft(info.requestsLeft)
+      setCooldownSeconds(60)
+
       setAuthStep('verify-otp')
     } else {
       console.error('Error signing in:', signInError)
@@ -32,6 +74,46 @@ export function LoginPage() {
     }
 
     setIsLoading(false)
+  }
+
+  const handleResendCode = async () => {
+    setError(null)
+    setIsLoading(true)
+
+    // Проверка rate limit
+    const rateLimitCheck = canSendOtpRequest(email)
+    if (!rateLimitCheck.allowed) {
+      setIsLoading(false)
+
+      if (rateLimitCheck.reason === 'cooldown') {
+        setError(interpolate(t.login.cooldownError, { seconds: rateLimitCheck.retryAfter || 60 }))
+        setCooldownSeconds(rateLimitCheck.retryAfter || 60)
+      } else if (rateLimitCheck.reason === 'rate_limit') {
+        const minutes = Math.ceil((rateLimitCheck.retryAfter || 0) / 60)
+        setError(interpolate(t.login.rateLimitError, { minutes }))
+      }
+      return
+    }
+
+    const { error: signInError } = await signInWithOtp(email)
+
+    if (!signInError) {
+      recordOtpRequest(email)
+      const info = getRateLimitInfo()
+      setRequestsLeft(info.requestsLeft)
+      setCooldownSeconds(60)
+      setError(null)
+    } else {
+      console.error('Error resending code:', signInError)
+      setError(signInError.message)
+    }
+
+    setIsLoading(false)
+  }
+
+  const handleIHaveCode = () => {
+    setAuthStep('verify-otp')
+    setError(null)
   }
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
@@ -119,15 +201,36 @@ export function LoginPage() {
               {isLoading ? t.common.loading : t.login.verifyButton}
             </Button>
 
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleBackToEmail}
-              className="w-full"
-            >
-              {t.login.backButton}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleBackToEmail}
+                className="flex-1"
+              >
+                {t.login.backButton}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleResendCode}
+                disabled={isLoading || cooldownSeconds > 0}
+                className="flex-1"
+              >
+                {cooldownSeconds > 0
+                  ? interpolate(t.login.resendCodeIn, { seconds: cooldownSeconds })
+                  : t.login.resendCode}
+              </Button>
+            </div>
+
+            {requestsLeft < 10 && requestsLeft > 0 && (
+              <div className="text-xs text-center text-gray-500">
+                {interpolate(t.login.requestsLeft, { count: requestsLeft })}
+              </div>
+            )}
           </form>
         </div>
       </div>
@@ -176,11 +279,26 @@ export function LoginPage() {
 
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || cooldownSeconds > 0}
             className="w-full min-h-[48px]"
           >
             {isLoading ? t.common.loading : t.login.signInButton}
           </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleIHaveCode}
+            className="w-full"
+          >
+            {t.login.iHaveCode}
+          </Button>
+
+          {requestsLeft < 10 && requestsLeft > 0 && (
+            <div className="text-xs text-center text-gray-500">
+              {interpolate(t.login.requestsLeft, { count: requestsLeft })}
+            </div>
+          )}
         </form>
       </div>
     </div>
