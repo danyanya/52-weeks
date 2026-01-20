@@ -8,7 +8,14 @@ export function Header() {
   const { t } = useTranslation()
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header
+      className="bg-white border-b border-gray-200"
+      style={{
+        paddingTop: 'max(env(safe-area-inset-top), 0.75rem)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)'
+      }}
+    >
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
         <h1 className="text-lg sm:text-2xl font-bold text-gray-900">{t.header.title}</h1>
 

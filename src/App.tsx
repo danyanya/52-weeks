@@ -22,10 +22,21 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen bg-gray-50"
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom)'
+      }}
+    >
       <Header />
       <YearProgress />
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl">
+      <main
+        className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl"
+        style={{
+          paddingLeft: 'max(env(safe-area-inset-left), 0.75rem)',
+          paddingRight: 'max(env(safe-area-inset-right), 0.75rem)'
+        }}
+      >
         <MainView />
       </main>
     </div>

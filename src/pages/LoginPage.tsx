@@ -146,7 +146,15 @@ export function LoginPage() {
   // Экран ввода OTP кода
   if (authStep === 'verify-otp') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-3 sm:px-4">
+      <div
+        className="min-h-screen bg-gray-50 flex items-center justify-center px-3 sm:px-4"
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingLeft: 'max(env(safe-area-inset-left), 0.75rem)',
+          paddingRight: 'max(env(safe-area-inset-right), 0.75rem)'
+        }}
+      >
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 sm:p-8 relative">
           <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
             <LanguageSwitcher />
@@ -239,7 +247,15 @@ export function LoginPage() {
 
   // Экран ввода email
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-3 sm:px-4">
+    <div
+      className="min-h-screen bg-gray-50 flex items-center justify-center px-3 sm:px-4"
+      style={{
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'max(env(safe-area-inset-left), 0.75rem)',
+        paddingRight: 'max(env(safe-area-inset-right), 0.75rem)'
+      }}
+    >
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 sm:p-8 relative">
         <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
           <LanguageSwitcher />
