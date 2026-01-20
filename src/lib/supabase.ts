@@ -20,5 +20,30 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     flowType: 'pkce',
     // Дополнительная опция для storage recovery
     storageKey: 'sb-auth-token'
+  },
+  // Глобальные настройки для автоматических retry
+  global: {
+    headers: {
+      'X-Client-Info': '52-weeks-app'
+    }
   }
 })
+
+/**
+ * Принудительное обновление токена
+ * Используйте если подозреваете что токен протух
+ */
+export async function forceRefreshToken() {
+  try {
+    const { data, error } = await supabase.auth.refreshSession()
+    if (error) {
+      console.error('❌ Failed to refresh token:', error.message)
+      return { success: false, error }
+    }
+    console.log('✅ Token manually refreshed')
+    return { success: true, session: data.session }
+  } catch (error) {
+    console.error('❌ Error refreshing token:', error)
+    return { success: false, error }
+  }
+}

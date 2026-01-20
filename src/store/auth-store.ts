@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed, isWhitelistEnabled, getWhitelistErrorMessage } from '../lib/email-whitelist'
+import { startTokenRefreshMonitor, stopTokenRefreshMonitor } from '../lib/token-refresh'
 import type { User } from '@supabase/supabase-js'
 
 interface AuthState {
@@ -47,8 +48,22 @@ export const useAuthStore = create<AuthState>((set) => ({
       isLoading: false
     })
 
-    // Подписка на изменения auth state
-    supabase.auth.onAuthStateChange(async (_event, session) => {
+    // Запускаем мониторинг автообновления токенов если пользователь залогинен
+    if (session?.user) {
+      startTokenRefreshMonitor()
+    }
+
+    // Подписка на изменения auth state с обработкой автообновления
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      // Логирование для отладки
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('✅ Token auto-refreshed successfully')
+      } else if (event === 'SIGNED_OUT') {
+        console.log('🔓 User signed out')
+      } else if (event === 'SIGNED_IN') {
+        console.log('🔐 User signed in')
+      }
+
       const userEmail = session?.user?.email
       const isAllowed = !userEmail || isEmailAllowed(userEmail)
 
@@ -67,6 +82,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         user: session?.user ?? null,
         isAuthenticated: !!session?.user
       })
+
+      // Управляем мониторингом токенов в зависимости от состояния сессии
+      if (session?.user) {
+        startTokenRefreshMonitor()
+      } else {
+        stopTokenRefreshMonitor()
+      }
     })
   },
 
@@ -101,6 +123,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   signOut: async () => {
+    // Останавливаем мониторинг токенов
+    stopTokenRefreshMonitor()
     await supabase.auth.signOut()
     set({ user: null, isAuthenticated: false })
   },

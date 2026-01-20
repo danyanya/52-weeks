@@ -3,6 +3,8 @@ import { LoginPage } from './pages/LoginPage'
 import { Header } from './components/layout/Header'
 import { YearProgress } from './components/layout/YearProgress'
 import { MainView } from './pages/MainView'
+// Подключаем debug утилиты для доступа из консоли браузера
+import './lib/debug-session'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth()

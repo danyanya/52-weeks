@@ -15,8 +15,9 @@ const COOKIE_OPTIONS = {
   path: '/',
   sameSite: 'lax' as const,
   secure: window.location.protocol === 'https:',
-  // Cookies expire in 7 days by default
-  maxAge: 60 * 60 * 24 * 7
+  // Cookies expire in 1 year (очень долго, полагаемся на refresh token)
+  // Supabase будет автоматически обновлять токены до истечения
+  maxAge: 60 * 60 * 24 * 365
 }
 
 function setCookie(name: string, value: string, options = COOKIE_OPTIONS) {
