@@ -32,11 +32,8 @@ body {
   -webkit-touch-callout: none;
   touch-action: manipulation;
 
-  /* Safe area padding for iOS PWA */
+  /* Safe area padding for iOS PWA - только сверху для notch */
   padding-top: var(--sat);
-  padding-right: var(--sar);
-  padding-bottom: var(--sab);
-  padding-left: var(--sal);
 }
 
 #root {
