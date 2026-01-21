@@ -35,20 +35,20 @@ export function QuarterView({ year, quarter, onWeekClick }: QuarterViewProps) {
               onClick={() => onWeekClick(weekNumber)}
               className={`rounded-xl border p-3 sm:p-4 text-left transition-all active:scale-[0.98] min-h-[80px] ${
                 isCurrent
-                  ? 'bg-blue-50 border-blue-300 shadow-md'
-                  : 'bg-white border-gray-200 active:border-blue-200 sm:hover:border-blue-200 sm:hover:shadow-sm'
+                  ? 'bg-gray-100 border-gray-400 shadow-md'
+                  : 'bg-white border-gray-200 active:border-gray-300 sm:hover:border-gray-300 sm:hover:shadow-sm'
               }`}
             >
               <div className="flex items-center justify-between mb-1 sm:mb-2">
                 <span
                   className={`text-xl sm:text-2xl font-bold ${
-                    isCurrent ? 'text-blue-600' : 'text-gray-900'
+                    isCurrent ? 'text-gray-700' : 'text-gray-900'
                   }`}
                 >
                   {weekNumber}
                 </span>
                 {isCurrent && (
-                  <span className="text-[10px] sm:text-xs bg-blue-100 text-blue-600 px-1.5 sm:px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] sm:text-xs bg-gray-200 text-gray-700 px-1.5 sm:px-2 py-0.5 rounded-full">
                     {t.day.today}
                   </span>
                 )}

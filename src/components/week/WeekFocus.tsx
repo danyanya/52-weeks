@@ -29,7 +29,7 @@ export function WeekFocus({ focusText, onChange }: WeekFocusProps) {
   const lineCount = localText.trim() ? localText.split('\n').filter(l => l.trim()).length : 0
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 shadow-sm">
+    <div className="bg-gradient-to-r from-gray-100 to-gray-100 rounded-2xl border border-gray-300 shadow-sm">
       <div
         onClick={() => setIsExpanded(!isExpanded)}
         className="px-3 sm:px-5 py-3 sm:py-4 min-h-[56px] flex items-center justify-between cursor-pointer active:opacity-70 transition-opacity"
@@ -53,7 +53,7 @@ export function WeekFocus({ focusText, onChange }: WeekFocusProps) {
             </p>
           </div>
         </div>
-        <span className={`transition-transform text-blue-600 text-lg ${isExpanded ? 'rotate-180' : ''}`}>
+        <span className={`transition-transform text-gray-700 text-lg ${isExpanded ? 'rotate-180' : ''}`}>
           ▾
         </span>
       </div>
@@ -63,7 +63,7 @@ export function WeekFocus({ focusText, onChange }: WeekFocusProps) {
           <textarea
             value={localText}
             onChange={(e) => handleChange(e.target.value)}
-            className="w-full min-h-[120px] px-3 py-2 text-sm sm:text-base font-mono bg-white border border-blue-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
+            className="w-full min-h-[120px] px-3 py-2 text-sm sm:text-base font-mono bg-white border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 touch-manipulation"
             placeholder={t.weekFocus.placeholder}
             autoComplete="off"
             autoCorrect="off"

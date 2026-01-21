@@ -32,7 +32,7 @@ export function LineRenderer({ line }: LineRendererProps) {
   return (
     <div className={getLineStyle()}>
       {line.time && (
-        <span className="text-blue-600 font-mono text-xs sm:text-sm mr-2 inline-block min-w-[60px] sm:min-w-[80px]">
+        <span className="text-gray-700 font-mono text-xs sm:text-sm mr-2 inline-block min-w-[60px] sm:min-w-[80px]">
           {line.time}
         </span>
       )}

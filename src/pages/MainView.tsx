@@ -49,7 +49,7 @@ export function MainView() {
       <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
         <button
           onClick={() => setViewState({ type: 'year', year: viewState.year })}
-          className="hover:text-blue-600 transition-colors"
+          className="hover:text-gray-700 transition-colors"
         >
           {viewState.year}
         </button>
@@ -64,7 +64,7 @@ export function MainView() {
                     const quarter = viewState.quarter || getQuarterFromWeek(viewState.weekNumber || 1)
                     setViewState({ type: 'quarter', year: viewState.year, quarter })
                   }}
-                  className="hover:text-blue-600 transition-colors"
+                  className="hover:text-gray-700 transition-colors"
                 >
                   Q{viewState.quarter}
                 </button>

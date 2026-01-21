@@ -4,8 +4,8 @@
   "description": "Weekly planning with focus on simplicity. Track your goals across 52 weeks.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F9FAFB",
-  "theme_color": "#3B82F6",
+  "background_color": "#374151",
+  "theme_color": "#374151",
   "orientation": "portrait",
   "icons": [
     {

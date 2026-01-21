@@ -31,9 +31,9 @@ export function YearProgress() {
                 key={week}
                 className={`aspect-square rounded-[2px] sm:rounded-sm transition-colors ${
                   isCurrent
-                    ? 'bg-blue-500'
+                    ? 'bg-gray-1000'
                     : isPast
-                    ? 'bg-blue-200'
+                    ? 'bg-gray-300'
                     : 'bg-gray-100'
                 }`}
                 title={`${t.yearProgress.week} ${week}`}

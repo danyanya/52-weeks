@@ -46,7 +46,7 @@ export function YearView({ year, onQuarterClick, onYearChange }: YearViewProps) 
           >
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
                   {getQuarterName(quarter)}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">
@@ -60,7 +60,7 @@ export function YearView({ year, onQuarterClick, onYearChange }: YearViewProps) 
               {formatQuarterRange(year, quarter)}
             </p>
 
-            <div className="mt-3 sm:mt-4 text-xs text-blue-600 font-medium opacity-0 sm:group-hover:opacity-100 transition-opacity">
+            <div className="mt-3 sm:mt-4 text-xs text-gray-700 font-medium opacity-0 sm:group-hover:opacity-100 transition-opacity">
               {t.quarter.openQuarter}
             </div>
           </button>

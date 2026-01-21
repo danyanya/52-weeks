@@ -146,23 +146,15 @@ export function LoginPage() {
   // Экран ввода OTP кода
   if (authStep === 'verify-otp') {
     return (
-      <div
-        className="min-h-screen bg-gray-50 flex items-center justify-center px-3 sm:px-4"
-        style={{
-          paddingTop: 'env(safe-area-inset-top)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-          paddingLeft: 'max(env(safe-area-inset-left), 0.75rem)',
-          paddingRight: 'max(env(safe-area-inset-right), 0.75rem)'
-        }}
-      >
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-3 sm:px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 sm:p-8 relative">
           <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
             <LanguageSwitcher />
           </div>
 
           <div className="text-center mb-6 sm:mb-8">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <svg className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <svg className="w-7 h-7 sm:w-8 sm:h-8 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
@@ -191,7 +183,7 @@ export function LoginPage() {
                 pattern="[0-9]{6}"
                 autoComplete="one-time-code"
                 autoFocus
-                className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
+                className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-1000 focus:border-transparent touch-manipulation"
               />
             </div>
 
@@ -283,7 +275,7 @@ export function LoginPage() {
               placeholder={t.auth.emailPlaceholder}
               required
               autoComplete="email"
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent touch-manipulation"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-1000 focus:border-transparent touch-manipulation"
             />
           </div>
 

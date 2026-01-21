@@ -82,33 +82,33 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
   return (
     <div
       className={`bg-white rounded-2xl border transition-all ${
-        isToday ? 'border-blue-300 shadow-md' : 'border-gray-100 shadow-sm'
+        isToday ? 'border-gray-400 shadow-md' : 'border-gray-100 shadow-sm'
       }`}
     >
       {/* Header - клик для toggle */}
       <div
         onClick={handleHeaderClick}
         className={`px-3 sm:px-4 py-3 sm:py-3 min-h-[56px] flex items-center justify-between cursor-pointer rounded-t-2xl active:opacity-70 transition-opacity ${
-          isToday ? 'bg-blue-50' : 'bg-gray-50'
+          isToday ? 'bg-gray-100' : 'bg-gray-50'
         }`}
       >
         <div className="flex items-center gap-2 sm:gap-3">
           <span
             className={`text-xl sm:text-2xl font-light ${
-              isToday ? 'text-blue-600' : 'text-gray-400'
+              isToday ? 'text-gray-700' : 'text-gray-400'
             }`}
           >
             {day.dayOfMonth}
           </span>
           <span
             className={`font-medium text-sm sm:text-base ${
-              isToday ? 'text-blue-700' : 'text-gray-700'
+              isToday ? 'text-gray-800' : 'text-gray-700'
             }`}
           >
             {getDayName(day.index)}
           </span>
           {isToday && (
-            <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">
               {t.day.today}
             </span>
           )}
@@ -121,7 +121,7 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
             <span className="text-lg">✏️</span>
           ) : viewMode === 'expanded' ? (
             <div className="flex items-center gap-1">
-              <span className="text-xs text-blue-600 hidden sm:inline">
+              <span className="text-xs text-gray-700 hidden sm:inline">
                 {locale === 'ru' ? 'клик → ✏️' : 'click → ✏️'}
               </span>
               <span className="transition-transform text-lg rotate-180">
@@ -176,7 +176,7 @@ export function DayCard({ day, content, isToday, onChange }: DayCardProps) {
                 e.stopPropagation()
                 handleEditClick()
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <span>✏️</span>
               <span>{locale === 'ru' ? 'Редактировать' : 'Edit'}</span>
